@@ -1,10 +1,14 @@
+/**
+ * Typed timeout helper
+ * @param seconds
+ */
 const waitFor = <T>(seconds: number): Promise<T> =>
   new Promise((r) => setTimeout(r, seconds * 1000));
 
 /**
  * Retries Promises
  * @param operation
- * @param delay
+ * @param delay (seconds!)
  * @param retries
  * @param onError
  */
