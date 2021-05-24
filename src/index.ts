@@ -1,3 +1,4 @@
+export * from './decorators';
 export * from './deserializer';
 export * from './interfaces';
 export * from './providers';
