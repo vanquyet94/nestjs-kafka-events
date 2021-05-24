@@ -1,9 +1,29 @@
-export const KAFKA_EVENT_HANDLER_MAP: Map<string, any> = new Map();
+import { SetMetadata } from '@nestjs/common';
+import {
+  IKafkaEvent,
+  KafkaEventHandlerFunction,
+} from '../interfaces/kafka-event.interface';
 
-export function EventHandler(topic: string): MethodDecorator {
-  return (target, propertyKey, descriptor) => {
-    const handlerMethod = target[propertyKey];
-    KAFKA_EVENT_HANDLER_MAP.set(topic, handlerMethod);
-    return descriptor;
+export type KafkaEventHandlerMetadata = {
+  topic: string;
+  target: any;
+  methodName: string | symbol;
+  callback: KafkaEventHandlerFunction;
+};
+
+export const KAFKA_EVENT_HANDLER = 'KAFKA_EVENT_HANDLER';
+
+export const EventHandler = (topic: string): MethodDecorator => {
+  return <T = (event: IKafkaEvent) => Promise<void>>(
+    target,
+    propertyKey,
+    descriptor,
+  ) => {
+    SetMetadata<string, KafkaEventHandlerMetadata>(KAFKA_EVENT_HANDLER, {
+      topic,
+      target: target.constructor.name,
+      methodName: propertyKey,
+      callback: descriptor.value,
+    })(target, propertyKey, descriptor);
   };
-}
+};

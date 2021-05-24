@@ -1,4 +1,10 @@
-import { DynamicModule, Global, Module, Provider } from '@nestjs/common';
+import {
+  DynamicModule,
+  Global,
+  Module,
+  OnModuleInit,
+  Provider,
+} from '@nestjs/common';
 import {
   IKafkaModuleOptionsFactory,
   IKafkaModuleRegisterAsyncOptions,
@@ -8,10 +14,18 @@ import {
   KAFKA_MODULE_CONFIGURATION,
   KafkaModuleConfigurationProvider,
 } from './providers';
+import { KafkaEventHandlerService } from './kafka-event-handler.service';
+import { MetadataScanner } from '@nestjs/core';
 
 @Global()
-@Module({})
-export class KafkaModule {
+@Module({
+  providers: [KafkaEventHandlerService, MetadataScanner],
+})
+export class KafkaModule implements OnModuleInit {
+  constructor(
+    private readonly kafkaEventHandlerExplorerService: KafkaEventHandlerService,
+  ) {}
+
   /**
    * Register asynchronously
    * @param options
@@ -21,12 +35,8 @@ export class KafkaModule {
   ): DynamicModule {
     const svc: Provider = {
       provide: KafkaService,
-      useFactory: async (
-        kafkaModuleConfigurationProvider: KafkaModuleConfigurationProvider,
-      ) => {
-        return new KafkaService(kafkaModuleConfigurationProvider.get());
-      },
-      inject: [KafkaModuleConfigurationProvider],
+      useClass: KafkaService,
+      inject: [KafkaModuleConfigurationProvider, KafkaEventHandlerService],
     };
     const kafkaModuleConfigurationProvider: Provider =
       this.createKafkaModuleConfigurationProvider(options);
@@ -64,5 +74,12 @@ export class KafkaModule {
         await optionsFactory.creatKafkaModuleOptions(),
       inject: [options.useExisting || options.useClass],
     };
+  }
+
+  /**
+   * Explore all registered event handlers
+   */
+  onModuleInit() {
+    this.kafkaEventHandlerExplorerService.explore();
   }
 }
