@@ -2,19 +2,20 @@ import {
   ConsumerConfig,
   KafkaConfig,
   ProducerConfig,
-  ProducerRecord,
-  Message,
   ConsumerRunConfig,
 } from 'kafkajs';
+import { SchemaRegistryAPIClientArgs } from '@kafkajs/confluent-schema-registry/dist/api';
+import { SchemaRegistryAPIClientOptions } from '@kafkajs/confluent-schema-registry/dist/@types';
+
+export interface IKafkaModuleSchemaRegistryConfiguration {
+  api: SchemaRegistryAPIClientArgs;
+  options?: SchemaRegistryAPIClientOptions;
+}
 
 export interface IKafkaModuleConfiguration {
   client: KafkaConfig;
-  consumer: ConsumerConfig;
+  consumer?: ConsumerConfig;
   consumerRunConfig?: ConsumerRunConfig;
-  producer?: ProducerConfig;
-  //deserializer?: Deserializer;
-  //serializer?: Serializer;
-  consumeFromBeginning?: boolean;
-  seek?: Record<string, number | 'earliest'>;
-  autoConnect?: boolean;
+  producer?: ProducerConfig & { topics?: string[] };
+  schemaRegistry: IKafkaModuleSchemaRegistryConfiguration;
 }
