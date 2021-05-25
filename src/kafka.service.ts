@@ -3,7 +3,7 @@ import {
   OnApplicationBootstrap,
   OnApplicationShutdown,
 } from '@nestjs/common';
-import { KafkaEventHandlerService } from './kafka-event-handler.service';
+import { KafkaEventFunctionsService } from './kafka-event-functions.service';
 import { KafkaModuleConfigurationProvider } from './providers';
 import { retry } from './helpers/retry.util';
 import { KafkaLogger } from './loggers';
@@ -37,7 +37,7 @@ export class KafkaService
 
   constructor(
     private readonly kafkaModuleConfigurationProvider: KafkaModuleConfigurationProvider,
-    private readonly kafkaEventHandlerService: KafkaEventHandlerService,
+    private readonly kafkaEventFunctionsService: KafkaEventFunctionsService,
     private readonly kafkaLogger: KafkaLogger,
     private readonly kafkaAvroSerializer: KafkaAvroSerializer,
     private readonly kafkaAvroDeserializer: KafkaAvroDeserializer,
@@ -45,7 +45,9 @@ export class KafkaService
     this.config = kafkaModuleConfigurationProvider.get();
     this.kafka = new Kafka({
       ...this.config.client,
-      logCreator: this.kafkaLogger.getKafkaJSLoggingAdapter,
+      logCreator: this.kafkaLogger.getKafkaJSLoggingAdapter.bind(
+        this.kafkaLogger,
+      ),
     });
     if (this.config.consumer) {
       this.consumer = this.kafka.consumer(this.config.consumer);
@@ -59,21 +61,40 @@ export class KafkaService
   /**
    * Connect to Kafka brokers and initialize schema registry and serializers
    */
-  async connect(): Promise<void> {
-    const topics = this.kafkaEventHandlerService.getTopics() ?? [];
+  async connectToKafka(): Promise<void> {
     if (this.producer) {
       await this.producer.connect();
-      await this.kafkaAvroSerializer.initialize(this.config.schemaRegistry, [
-        ...topics,
-        ...(this.config?.producer?.topics ?? []),
-      ]);
     }
     if (this.consumer) {
       await this.consumer.connect();
+    }
+    await this.admin.connect();
+  }
+
+  /**
+   * Connect to Schema Registry
+   */
+  async connectToSchemaRegistry(): Promise<void> {
+    const eventEmitterTopics =
+      this.kafkaEventFunctionsService.getEventEmitterTopics() ?? [];
+    if (!!this.producer !== eventEmitterTopics.length > 0) {
+      this.kafkaLogger.error(
+        `When having producer config set, event emitters need to be registered too (and vice versa)`,
+      );
+    }
+    if (this.producer) {
+      await this.kafkaAvroSerializer.initialize(
+        this.config.schemaRegistry,
+        eventEmitterTopics,
+      );
+    }
+    if (this.consumer) {
+      const sTopics =
+        this.kafkaEventFunctionsService.getEventHandlerTopics() ?? [];
       let subjectProbe: string = undefined;
-      if (topics.length > 0) {
+      if (sTopics.length > 0) {
         subjectProbe = getSchemaRegistryValueSubjectByTopic(
-          topics[Math.floor(Math.random() * topics.length)],
+          sTopics[Math.floor(Math.random() * sTopics.length)],
         );
       }
       await this.kafkaAvroDeserializer.initialize(
@@ -81,7 +102,6 @@ export class KafkaService
         subjectProbe,
       );
     }
-    await this.admin.connect();
   }
 
   /**
@@ -104,7 +124,9 @@ export class KafkaService
    * a not running or wrong configured Kafka setup does not lead to data inconsistencies.
    */
   async onApplicationBootstrap(): Promise<void> {
-    await retry(async () => this.connect(), 5, 3);
+    await this.connectToKafka();
+    // Retry only this op manually as rest is retried by KafkaJS
+    await retry(async () => await this.connectToSchemaRegistry(), 5, 2);
     await this.fetchTopicOffsets();
     await this.subscribeToTopics();
     await this.bindEventHandlers();
@@ -123,7 +145,7 @@ export class KafkaService
    * @private
    */
   private async fetchTopicOffsets(): Promise<void> {
-    for await (const topic of this.kafkaEventHandlerService.getTopics()) {
+    for await (const topic of this.kafkaEventFunctionsService.getEventHandlerTopics()) {
       try {
         const topicOffsets = await this.admin.fetchTopicOffsets(topic);
         this.topicOffsets.set(topic, topicOffsets);
@@ -142,7 +164,7 @@ export class KafkaService
    * @private
    */
   private async subscribeToTopics(): Promise<void> {
-    for await (const topic of this.kafkaEventHandlerService.getTopics()) {
+    for await (const topic of this.kafkaEventFunctionsService.getEventHandlerTopics()) {
       try {
         await this.consumer.subscribe({ topic, fromBeginning: false });
       } catch (reject) {
@@ -173,7 +195,7 @@ export class KafkaService
               const event = await this.kafkaAvroDeserializer.deserialize(
                 message,
               );
-              await this.kafkaEventHandlerService.callEventHandler(
+              await this.kafkaEventFunctionsService.callEventHandler(
                 topic,
                 event,
               );

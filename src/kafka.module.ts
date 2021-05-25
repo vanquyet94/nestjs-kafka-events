@@ -14,7 +14,7 @@ import {
   KAFKA_MODULE_CONFIGURATION,
   KafkaModuleConfigurationProvider,
 } from './providers';
-import { KafkaEventHandlerService } from './kafka-event-handler.service';
+import { KafkaEventFunctionsService } from './kafka-event-functions.service';
 import { MetadataScanner } from '@nestjs/core';
 import { KafkaLogger } from './loggers';
 import { KafkaAvroDeserializer } from './deserializer';
@@ -22,11 +22,11 @@ import { KafkaAvroSerializer } from './serializer';
 
 @Global()
 @Module({
-  providers: [KafkaEventHandlerService, MetadataScanner, KafkaLogger],
+  providers: [KafkaEventFunctionsService, MetadataScanner, KafkaLogger],
 })
 export class KafkaModule implements OnModuleInit {
   constructor(
-    private readonly kafkaEventHandlerExplorerService: KafkaEventHandlerService,
+    private readonly kafkaEventFunctionsService: KafkaEventFunctionsService,
   ) {}
 
   /**
@@ -39,12 +39,7 @@ export class KafkaModule implements OnModuleInit {
     const svc: Provider = {
       provide: KafkaService,
       useClass: KafkaService,
-      inject: [
-        KafkaModuleConfigurationProvider,
-        KafkaEventHandlerService,
-        KafkaAvroDeserializer,
-        KafkaAvroSerializer,
-      ],
+      inject: [KafkaModuleConfigurationProvider, KafkaEventFunctionsService],
     };
     const kafkaModuleConfigurationProvider: Provider =
       this.createKafkaModuleConfigurationProvider(options);
@@ -55,6 +50,8 @@ export class KafkaModule implements OnModuleInit {
       providers: [
         kafkaModuleConfigurationProvider,
         KafkaModuleConfigurationProvider,
+        KafkaAvroDeserializer,
+        KafkaAvroSerializer,
         KafkaLogger,
         svc,
       ],
@@ -89,6 +86,6 @@ export class KafkaModule implements OnModuleInit {
    * Explore all registered event handlers
    */
   onModuleInit() {
-    this.kafkaEventHandlerExplorerService.explore();
+    this.kafkaEventFunctionsService.explore();
   }
 }

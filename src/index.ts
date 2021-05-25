@@ -5,3 +5,4 @@ export * from './providers';
 export * from './serializer';
 export * from './kafka.module';
 export * from './kafka.service';
+export * from './kafka-event-functions.service';
