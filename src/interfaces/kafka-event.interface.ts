@@ -17,6 +17,11 @@ export interface IKafkaEvent<
 export type KafkaEventHandlerFunction = (event: IKafkaEvent) => Promise<void>;
 
 /**
+ * Event emitter function
+ */
+export type KafkaEventEmitterFunction = () => Promise<void>;
+
+/**
  * Payload for emitting Kafka-related events
  */
 export type EmitKafkaEventPayload = {

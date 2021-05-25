@@ -16,6 +16,6 @@ export interface IKafkaModuleConfiguration {
   client: KafkaConfig;
   consumer?: ConsumerConfig;
   consumerRunConfig?: ConsumerRunConfig;
-  producer?: ProducerConfig & { topics?: string[] };
+  producer?: ProducerConfig;
   schemaRegistry: IKafkaModuleSchemaRegistryConfiguration;
 }
