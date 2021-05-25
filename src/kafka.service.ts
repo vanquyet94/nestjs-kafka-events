@@ -18,7 +18,7 @@ import {
 import { KafkaAvroSerializer } from './serializer';
 import { KafkaAvroDeserializer } from './deserializer';
 import { IKafkaModuleConfiguration } from './interfaces';
-import { EmitKafkaEventPayload } from './interfaces/kafka-event.interface';
+import { EmitKafkaEventPayload } from './interfaces';
 import { getSchemaRegistryValueSubjectByTopic } from './helpers/topic-subject.helper';
 
 @Injectable()

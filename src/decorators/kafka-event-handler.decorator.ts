@@ -1,8 +1,5 @@
 import { SetMetadata } from '@nestjs/common';
-import {
-  IKafkaEvent,
-  KafkaEventHandlerFunction,
-} from '../interfaces/kafka-event.interface';
+import { IKafkaEvent, KafkaEventHandlerFunction } from '../interfaces';
 
 export type KafkaEventHandlerMetadata = {
   topic: string;

@@ -11,10 +11,7 @@ import {
   Controller,
   Injectable as IInjectable,
 } from '@nestjs/common/interfaces';
-import {
-  IKafkaEvent,
-  KafkaEventHandlerFunction,
-} from './interfaces/kafka-event.interface';
+import { IKafkaEvent, KafkaEventHandlerFunction } from './interfaces';
 import { KafkaLogger } from './loggers';
 
 @Injectable()

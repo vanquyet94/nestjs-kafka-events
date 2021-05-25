@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { SchemaRegistry } from '@kafkajs/confluent-schema-registry';
 import { KafkaLogger } from '../loggers';
 import { IKafkaModuleSchemaRegistryConfiguration } from '../interfaces';
-import { IKafkaEvent } from '../interfaces/kafka-event.interface';
+import { IKafkaEvent } from '../interfaces';
 import { KafkaMessage } from 'kafkajs';
 
 @Injectable()

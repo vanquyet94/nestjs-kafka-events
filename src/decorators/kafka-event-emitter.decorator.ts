@@ -1,5 +1,5 @@
 import { SetMetadata } from '@nestjs/common';
-import { KafkaEventEmitterFunction } from '../interfaces/kafka-event.interface';
+import { KafkaEventEmitterFunction } from '../interfaces';
 
 export type KafkaEventEmitterMetadata = {
   topics: string | string[];

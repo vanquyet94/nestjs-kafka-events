@@ -6,7 +6,7 @@ import {
   getSchemaRegistryKeySubjectByTopic,
   getSchemaRegistryValueSubjectByTopic,
 } from '../helpers/topic-subject.helper';
-import { EmitKafkaEventPayload } from '../interfaces/kafka-event.interface';
+import { EmitKafkaEventPayload } from '../interfaces';
 import { Message } from 'kafkajs';
 
 @Injectable()

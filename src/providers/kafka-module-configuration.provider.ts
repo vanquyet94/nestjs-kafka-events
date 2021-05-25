@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { IKafkaModuleConfiguration } from '../interfaces/kafka-module-configuration.interface';
+import { IKafkaModuleConfiguration } from '../interfaces';
 
 export const KAFKA_MODULE_CONFIGURATION = 'KAFKA_MODULE_CONFIGURATION';
 
