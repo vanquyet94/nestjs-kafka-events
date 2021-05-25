@@ -61,7 +61,7 @@ export class KafkaService
   /**
    * Connect to Kafka brokers and initialize schema registry and serializers
    */
-  async connectToKafka(): Promise<void> {
+  private async connectToKafka(): Promise<void> {
     if (this.producer) {
       await this.producer.connect();
     }
@@ -74,7 +74,7 @@ export class KafkaService
   /**
    * Connect to Schema Registry
    */
-  async connectToSchemaRegistry(): Promise<void> {
+  private async connectToSchemaRegistry(): Promise<void> {
     const eventEmitterTopics =
       this.kafkaEventFunctionsService.getEventEmitterTopics() ?? [];
     if (!!this.producer !== eventEmitterTopics.length > 0) {
@@ -107,7 +107,7 @@ export class KafkaService
   /**
    * Disconnect everything
    */
-  async disconnect(): Promise<void> {
+  private async disconnect(): Promise<void> {
     if (this.producer) {
       await this.producer.disconnect();
     }
