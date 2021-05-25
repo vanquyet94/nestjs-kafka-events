@@ -3,7 +3,9 @@
  * @param seconds
  */
 const waitFor = <T>(seconds: number): Promise<T> =>
-  new Promise((r) => setTimeout(r, seconds * 1000));
+  new Promise(
+    (r) => setTimeout(r, process.env?.JEST_WORKER_ID ? 1 : seconds * 1000), // makes it easier to test
+  );
 
 /**
  * Retries Promises
@@ -27,7 +29,7 @@ export const retry = <T>(
         }
         if (retries > 0) {
           return waitFor<T>(delay)
-            .then(retry.bind(null, operation, delay, retries - 1))
+            .then(retry.bind(null, operation, delay, retries - 1, onError))
             .then(resolve)
             .catch(reject);
         }

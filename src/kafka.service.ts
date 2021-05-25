@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { KafkaEventFunctionsService } from './kafka-event-functions.service';
 import { KafkaModuleConfigurationProvider } from './providers';
-import { retry } from './helpers/retry.util';
+import { retry } from './helpers/retry.helper';
 import { KafkaLogger } from './loggers';
 import {
   Consumer,
@@ -189,7 +189,7 @@ export class KafkaService
       ...(this.config?.consumerRunConfig ?? {}),
       eachMessage: async ({ topic, message }) => {
         try {
-          // retry once
+          // retry
           await retry(
             async () => {
               const event = await this.kafkaAvroDeserializer.deserialize(
@@ -222,9 +222,11 @@ export class KafkaService
   /**
    * Emit one or more events
    * @param payload
+   * @param failSilent
    */
   async emit<V, K>(
     payload: EmitKafkaEventPayload<V, K> | EmitKafkaEventPayload<V, K>[],
+    failSilent = true,
   ): Promise<void> {
     if (!this.producer) {
       this.kafkaLogger.error(
@@ -255,10 +257,13 @@ export class KafkaService
         messages: [await this.kafkaAvroSerializer.serialize(payload)],
       });
     } catch (reject) {
-      this.kafkaLogger.log(
+      this.kafkaLogger.error(
         `Error while emitting event(s): ${JSON.stringify(payload)}`,
         reject,
       );
+      if (!failSilent) {
+        throw reject;
+      }
     }
   }
 }

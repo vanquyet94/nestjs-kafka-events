@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { SetMetadata } from '@nestjs/common';
 import { IKafkaEvent, KafkaEventHandlerFunction } from '../interfaces';
 

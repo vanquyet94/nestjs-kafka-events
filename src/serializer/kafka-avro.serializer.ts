@@ -12,8 +12,7 @@ import { Message } from 'kafkajs';
 @Injectable()
 export class KafkaAvroSerializer {
   private schemaRegistry: SchemaRegistry;
-  protected schemas: Map<string, { keyId: number | null; valueId: number }> =
-    new Map();
+  schemas: Map<string, { keyId: number | null; valueId: number }> = new Map();
 
   constructor(private readonly kafkaLogger: KafkaLogger) {}
 

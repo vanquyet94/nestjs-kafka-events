@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { Injectable, Logger, Scope } from '@nestjs/common';
 import {
   LogEntry as KafkaJSLogEntry,
