@@ -155,7 +155,7 @@ describe('KafkaService', () => {
     expect(kafkaJSAdminDisconnect).toHaveBeenCalled();
   });
 
-  it('should connect to schema registry on app sbootstrap', async () => {
+  it('should connect to schema registry on app bootstrap', async () => {
     const eventHandlerTopics = ['topic1', 'topic2'];
     const eventEmitterTopics = ['topic3', 'topic4'];
     jest
