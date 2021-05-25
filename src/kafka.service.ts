@@ -201,7 +201,7 @@ export class KafkaService
               );
             },
             5,
-            1,
+            this.config?.consumer?.retry?.retries ?? 2,
             (reason) => {
               this.kafkaLogger.warn(
                 `Retrying to process message on topic ${topic}.`,
