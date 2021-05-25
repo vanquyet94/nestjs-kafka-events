@@ -13,7 +13,7 @@ export type KafkaEventHandlerMetadata = {
 
 export const KAFKA_EVENT_HANDLER = 'KAFKA_EVENT_HANDLER';
 
-export const EventHandler = (topic: string): MethodDecorator => {
+export const KafkaEventHandler = (topic: string): MethodDecorator => {
   return <T = (event: IKafkaEvent) => Promise<void>>(
     target,
     propertyKey,

@@ -10,7 +10,9 @@ export type KafkaEventEmitterMetadata = {
 
 export const KAFKA_EVENT_EMITTER = 'KAFKA_EVENT_EMITTER';
 
-export const EventEmitter = (topics: string | string[]): MethodDecorator => {
+export const KafkaEventEmitter = (
+  topics: string | string[],
+): MethodDecorator => {
   return <T = () => Promise<void>>(target, propertyKey, descriptor) => {
     SetMetadata<string, KafkaEventEmitterMetadata>(KAFKA_EVENT_EMITTER, {
       topics,
