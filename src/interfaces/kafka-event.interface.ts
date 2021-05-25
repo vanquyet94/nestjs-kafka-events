@@ -24,8 +24,8 @@ export type KafkaEventEmitterFunction = () => Promise<void>;
 /**
  * Payload for emitting Kafka-related events
  */
-export type EmitKafkaEventPayload = {
+export type EmitKafkaEventPayload<V, K> = {
   topic: string;
-  event: IKafkaEvent['event'];
-  key: IKafkaEvent['key'];
+  event: IKafkaEvent<V, K>['event'];
+  key: IKafkaEvent<V, K>['key'];
 };

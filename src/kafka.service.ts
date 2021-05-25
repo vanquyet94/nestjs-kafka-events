@@ -223,8 +223,8 @@ export class KafkaService
    * Emit one or more events
    * @param payload
    */
-  async emit(
-    payload: EmitKafkaEventPayload | EmitKafkaEventPayload[],
+  async emit<V, K>(
+    payload: EmitKafkaEventPayload<V, K> | EmitKafkaEventPayload<V, K>[],
   ): Promise<void> {
     if (!this.producer) {
       this.kafkaLogger.error(

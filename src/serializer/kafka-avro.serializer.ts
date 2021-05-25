@@ -75,8 +75,8 @@ export class KafkaAvroSerializer {
    * Serialize given payload to be compliant with KafkaJS
    * @param value
    */
-  async serialize(
-    value: EmitKafkaEventPayload & Omit<Message, 'key' | 'value'>,
+  async serialize<V, K>(
+    value: EmitKafkaEventPayload<V, K> & Omit<Message, 'key' | 'value'>,
   ): Promise<Message | undefined> {
     const ids = this.schemas.get(value.topic);
     if (!ids) {
