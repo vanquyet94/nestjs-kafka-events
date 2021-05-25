@@ -93,8 +93,6 @@ export class AppController {
 }
 ```
 
-▶️ The `IKafkaEvent` interface is generic and can be used in format `IKafkaEvent<YourEventType, YourEventKeyType>`.
-
 ▶️ Produce events:
 ```typescript
 // (...)
@@ -158,7 +156,8 @@ export class AppService {
   }
 }
 ```
-The `KafkaService.emit()` method is also generic and can be used with custom types to stay type-safe.
+
+▶️ The `IKafkaEvent` interface and `emit()` method are generic can be used with custom types to stay type-safe.
 
 The idea behind using decorators for handling and producing events was to simplify the workflow when new schemas/events
 are introduced. By doing it this way, it's easy to fetch all schemas at application start up which are needed for the
