@@ -189,7 +189,7 @@ export class KafkaService
       return;
     }
     this.consumer.run({
-      ...(this.config?.consumerRunConfig ?? {}),
+      ...(this.config?.consumerRun ?? {}),
       eachMessage: async ({ topic, message }) => {
         try {
           // retry

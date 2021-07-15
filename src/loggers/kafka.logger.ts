@@ -1,14 +1,14 @@
 /* istanbul ignore file */
-import { Injectable, Logger, Scope } from '@nestjs/common';
+import { ConsoleLogger, Injectable, Scope } from '@nestjs/common';
 import {
   LogEntry as KafkaJSLogEntry,
   logLevel as KafkaJSLogLevel,
 } from 'kafkajs';
 
 @Injectable({ scope: Scope.TRANSIENT })
-export class KafkaLogger extends Logger {
+export class KafkaLogger extends ConsoleLogger {
   constructor() {
-    super('Kafka', true);
+    super('Kafka');
   }
 
   /**

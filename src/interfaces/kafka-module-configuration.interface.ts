@@ -15,7 +15,7 @@ export interface IKafkaModuleSchemaRegistryConfiguration {
 export interface IKafkaModuleConfiguration {
   client: KafkaConfig;
   consumer?: ConsumerConfig;
-  consumerRunConfig?: ConsumerRunConfig;
+  consumerRun?: ConsumerRunConfig;
   producer?: ProducerConfig;
   schemaRegistry: IKafkaModuleSchemaRegistryConfiguration;
 }
